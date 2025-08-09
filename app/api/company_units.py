@@ -7,14 +7,17 @@ from app.core.response import success, error
 
 router = APIRouter()
 
+def serialize_company_unit(cu: CompanyUnit) -> dict:
+    return CompanyUnitSchema.model_validate(cu).model_dump()
+
 
 @router.post("/", response_model=CompanyUnitSchema)
 async def create_company_unit(company_unit: CompanyUnitCreate, db: Session = Depends(get_db_session)):
-    db_company_unit = CompanyUnit(**company_unit.dict())
+    db_company_unit = CompanyUnit(**company_unit.model_dump())
     db.add(db_company_unit)
     db.commit()
     db.refresh(db_company_unit)
-    return success(data=db_company_unit, message="CompanyUnit created successfully")
+    return success(data=serialize_company_unit(db_company_unit), message="CompanyUnit created successfully")
 
 
 @router.get("/{company_unit_id}", response_model=CompanyUnitSchema)
@@ -22,13 +25,13 @@ async def get_company_unit(company_unit_id: int, db: Session = Depends(get_db_se
     db_company_unit = db.query(CompanyUnit).filter(CompanyUnit.id == company_unit_id).first()
     if db_company_unit is None:
         raise HTTPException(status_code=404, detail="CompanyUnit not found")
-    return success(data=db_company_unit, message="CompanyUnit retrieved successfully")
+    return success(data=serialize_company_unit(db_company_unit), message="CompanyUnit retrieved successfully")
 
 
 @router.get("/", response_model=list[CompanyUnitSchema])
 async def get_company_units(skip: int = 0, limit: int = 100, db: Session = Depends(get_db_session)):
     company_units = db.query(CompanyUnit).offset(skip).limit(limit).all()
-    return success(data=company_units, message="CompanyUnits retrieved successfully")
+    return success(data=[serialize_company_unit(cu) for cu in company_units], message="CompanyUnits retrieved successfully")
 
 
 @router.put("/{company_unit_id}", response_model=CompanyUnitSchema)
@@ -36,12 +39,14 @@ async def update_company_unit(company_unit_id: int, company_unit: CompanyUnitCre
     db_company_unit = db.query(CompanyUnit).filter(CompanyUnit.id == company_unit_id).first()
     if db_company_unit is None:
         raise HTTPException(status_code=404, detail="CompanyUnit not found")
-    update_data = company_unit.dict(exclude_unset=True)
+    if not company_unit.unit_name:
+        raise HTTPException(status_code=422, detail="Company unit name cannot be empty")
+    update_data = company_unit.model_dump(exclude_unset=True)
     for key, value in update_data.items():
         setattr(db_company_unit, key, value)
     db.commit()
     db.refresh(db_company_unit)
-    return success(data=db_company_unit, message="CompanyUnit updated successfully")
+    return success(data=serialize_company_unit(db_company_unit), message="CompanyUnit updated successfully")
 
 
 @router.delete("/{company_unit_id}", response_model=CompanyUnitSchema)
@@ -51,4 +56,4 @@ async def delete_company_unit(company_unit_id: int, db: Session = Depends(get_db
         raise HTTPException(status_code=404, detail="CompanyUnit not found")
     db.delete(db_company_unit)
     db.commit()
-    return success(data=db_company_unit, message="CompanyUnit deleted successfully")
+    return success(data=serialize_company_unit(db_company_unit), message="CompanyUnit deleted successfully")

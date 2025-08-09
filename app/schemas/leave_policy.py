@@ -10,6 +10,11 @@ class LeavePolicyCreate(LeavePolicyBase):
     pass
 
 
+class LeavePolicyUpdate(BaseModel):
+    policy_name: str | None = Field(None, max_length=150)
+    details: dict | None = None
+
+
 class LeavePolicy(LeavePolicyBase):
     id: int
 
