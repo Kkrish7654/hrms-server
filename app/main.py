@@ -82,6 +82,8 @@ def create_application() -> FastAPI:
     app.include_router(attendance.router, prefix="/api/v1/attendance", tags=["attendance"])
     app.include_router(leave_types.router, prefix="/api/v1/leave-types", tags=["leave-types"])
     app.include_router(leave_policies.router, prefix="/api/v1/leave-policies", tags=["leave-policies"])
+    app.include_router(company_units.router, prefix="/api/v1/company-units", tags=["company-units"])
+    app.include_router(job_types.router, prefix="/api/v1/job-types", tags=["job-types"])
     # Include other routers here with their tags
 
     return app

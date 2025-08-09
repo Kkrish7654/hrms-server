@@ -4,16 +4,16 @@ from datetime import date
 
 
 class EmployeeBase(BaseModel):
-    employee_id: str = Field(..., max_length=50)
     first_name: str = Field(..., max_length=100)
     last_name: str = Field(..., max_length=100)
     email: EmailStr
-    phone: Optional[str] = Field(None, max_length=20)
-    profile_image_url: Optional[str] = Field(None, max_length=512)
-    department_id: Optional[int] = None
-    designation_id: Optional[int] = None
-    manager_id: Optional[int] = None
+    phone: str = Field(..., max_length=20)
+    employee_id: str = Field(..., max_length=50)
+    department_id: int
+    designation_id: int
     joining_date: date
+    profile_image_url: Optional[str] = Field(None, max_length=512)
+    manager_id: Optional[int] = None
     probation_period: Optional[str] = Field(None, max_length=50)
     work_location_id: Optional[int] = None
     job_type_id: Optional[int] = None
