@@ -12,6 +12,7 @@ from contextlib import asynccontextmanager
 from app.core.settings import settings
 from app.core.database import async_engine, Base
 from app.api.health import router as health_router
+from app.api import employees, departments, designations, leaves, attendance, leave_types, leave_policies
 # Import other routers here
 
 @asynccontextmanager
@@ -74,6 +75,13 @@ def create_application() -> FastAPI:
     )
 
     app.include_router(health_router, prefix="/api/v1", tags=["health"])
+    app.include_router(employees.router, prefix="/api/v1/employees", tags=["employees"])
+    app.include_router(departments.router, prefix="/api/v1/departments", tags=["departments"])
+    app.include_router(designations.router, prefix="/api/v1/designations", tags=["designations"])
+    app.include_router(leaves.router, prefix="/api/v1/leaves", tags=["leaves"])
+    app.include_router(attendance.router, prefix="/api/v1/attendance", tags=["attendance"])
+    app.include_router(leave_types.router, prefix="/api/v1/leave-types", tags=["leave-types"])
+    app.include_router(leave_policies.router, prefix="/api/v1/leave-policies", tags=["leave-policies"])
     # Include other routers here with their tags
 
     return app
