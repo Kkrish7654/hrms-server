@@ -7,12 +7,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from loguru import logger
 from starlette.middleware.sessions import SessionMiddleware
-from contextlib import asynccontextmanager
+import os
 
 from app.core.settings import settings
 from app.core.database import async_engine, Base
 from app.api.health import router as health_router
-from app.api import employees, departments, designations, leaves, attendance, leave_types, leave_policies
+from app.api import employees, departments, designations, leaves, attendance, leave_types, leave_policies, company_units, job_types
 # Import other routers here
 
 @asynccontextmanager
@@ -35,7 +35,7 @@ async def lifespan(app: FastAPI):
         logger.error(f"Error during shutdown: {str(e)}")
         raise
 
-def create_application() -> FastAPI:
+def create_application(include_trusted_host_middleware: bool = True) -> FastAPI:
     """Create and configure the FastAPI application."""
     app = FastAPI(
         title=settings.app_name,
@@ -64,10 +64,11 @@ def create_application() -> FastAPI:
         allow_headers=["*"],
     )
     
-    app.add_middleware(
-        TrustedHostMiddleware, 
-        allowed_hosts=["localhost", "127.0.0.1", settings.base_url]
-    )
+    if include_trusted_host_middleware:
+        app.add_middleware(
+            TrustedHostMiddleware, 
+            allowed_hosts=["localhost", "127.0.0.1", settings.base_url]
+        )
     
     app.add_middleware(
         SessionMiddleware, 
@@ -89,6 +90,6 @@ def create_application() -> FastAPI:
     return app
 
 # Create the FastAPI application instance
-app = create_application()
+app = create_application(include_trusted_host_middleware=True)
 
 # Optional: Add startup/shutdown event handlers if needed

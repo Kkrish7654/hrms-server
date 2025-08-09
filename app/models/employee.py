@@ -9,11 +9,13 @@ from sqlalchemy import (
     DateTime,
     Text,
 )
+
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from app.core.database import Base
+from app.models.leave import Leave
 
 
 class Employee(Base):
@@ -62,8 +64,10 @@ class Employee(Base):
 
     department = relationship("Department", back_populates="employees")
     designation = relationship("Designation", back_populates="employees")
-    manager = relationship("Employee", remote_side=[id])
+    manager = relationship("Employee", remote_side=[id], back_populates="subordinates")
+    subordinates = relationship("Employee", back_populates="manager", foreign_keys=[manager_id])
     work_location = relationship("CompanyUnit", back_populates="employees")
     job_type = relationship("JobType", back_populates="employees")
-    leaves = relationship("Leave", back_populates="employee")
+    leaves = relationship("Leave", back_populates="employee", foreign_keys=[Leave.employee_id])
+    approved_leaves = relationship("Leave", foreign_keys=[Leave.approved_by_id], back_populates="approver")
     attendance_records = relationship("Attendance", back_populates="employee")

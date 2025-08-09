@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class JobTypeBase(BaseModel):
@@ -12,5 +12,4 @@ class JobTypeCreate(JobTypeBase):
 class JobType(JobTypeBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

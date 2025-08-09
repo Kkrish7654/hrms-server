@@ -17,4 +17,8 @@ class Department(Base):
     name = Column(String(255), unique=True, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
-    employees = relationship("Employee", back_populates="department")
+    employees = relationship(
+        "Employee",
+        back_populates="department",
+        foreign_keys="Employee.department_id",
+    )

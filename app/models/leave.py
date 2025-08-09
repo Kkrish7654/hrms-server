@@ -27,4 +27,4 @@ class Leave(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     employee = relationship("Employee", back_populates="leaves", foreign_keys=[employee_id])
-    approver = relationship("Employee", foreign_keys=[approved_by_id])
+    approver = relationship("Employee", foreign_keys=[approved_by_id], back_populates="approved_leaves")

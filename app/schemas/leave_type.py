@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class LeaveTypeBase(BaseModel):
@@ -12,5 +12,4 @@ class LeaveTypeCreate(LeaveTypeBase):
 class LeaveType(LeaveTypeBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

@@ -1,6 +1,6 @@
 import os
 from typing import List
-from pydantic import Field
+from pydantic import Field, ConfigDict
 from pydantic_settings import BaseSettings
 
 
@@ -33,36 +33,36 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # General app settings
-    app_name: str = Field(default="FastAPI Application", env="APP_NAME")
-    app_version: str = Field(default="1.0.0", env="APP_VERSION")
-    debug: bool = Field(default=True, env="DEBUG")
-    secret_key: str = Field(default="changeme", env="SECRET_KEY")  # Set in .env for production
-    base_url: str = Field(default="http://localhost:8000", env="BASE_URL")
+    app_name: str = Field(default="FastAPI Application", json_schema_extra={"env": "APP_NAME"})
+    app_version: str = Field(default="1.0.0", json_schema_extra={"env": "APP_VERSION"})
+    debug: bool = Field(default=True, json_schema_extra={"env": "DEBUG"})
+    secret_key: str = Field(default="changeme", json_schema_extra={"env": "SECRET_KEY"})  # Set in .env for production
+    base_url: str = Field(default="http://localhost:8000", json_schema_extra={"env": "BASE_URL"})
 
     # Database settings
-    postgres_user: str = Field(default="postgres", env="POSTGRES_USER")
-    postgres_password: str = Field(default="root", env="POSTGRES_PASSWORD")
-    postgres_host: str = Field(default="localhost", env="POSTGRES_HOST")
-    postgres_port: int = Field(default=5432, env="POSTGRES_PORT")
-    postgres_db: str = Field(default="hrms_dev", env="POSTGRES_DB")
+    postgres_user: str = Field(default="postgres", json_schema_extra={"env": "POSTGRES_USER"})
+    postgres_password: str = Field(default="root", json_schema_extra={"env": "POSTGRES_PASSWORD"})
+    postgres_host: str = Field(default="localhost", json_schema_extra={"env": "POSTGRES_HOST"})
+    postgres_port: int = Field(default=5432, json_schema_extra={"env": "POSTGRES_PORT"})
+    postgres_db: str = Field(default="hrms_dev", json_schema_extra={"env": "POSTGRES_DB"})
 
     # CORS settings (restrict for dev, set properly for prod)
-    cors_origins: List[str] = Field(default=["http://localhost:5173"], env="CORS_ORIGINS")
+    cors_origins: List[str] = Field(default=["http://localhost:5173"], json_schema_extra={"env": "CORS_ORIGINS"})
 
     # Third-party API keys (never commit real keys)
-    openai_api_key: str = Field(default="", env="OPENAI_API_KEY")
+    openai_api_key: str = Field(default="", json_schema_extra={"env": "OPENAI_API_KEY"})
 
     # SMTP server settings
-    smtp_host: str = Field(default="smtp.gmail.com", env="SMTP_HOST")
-    smtp_port: int = Field(default=587, env="SMTP_PORT")
-    smtp_username: str = Field(default="", env="SMTP_USER")
-    smtp_password: str = Field(default="", env="SMTP_PASS")
+    smtp_host: str = Field(default="smtp.gmail.com", json_schema_extra={"env": "SMTP_HOST"})
+    smtp_port: int = Field(default=587, json_schema_extra={"env": "SMTP_PORT"})
+    smtp_username: str = Field(default="", json_schema_extra={"env": "SMTP_USER"})
+    smtp_password: str = Field(default="", json_schema_extra={"env": "SMTP_PASS"})
 
     # IMAP server settings
-    imap_server: str = Field(default="imap.gmail.com", env="IMAP_SERVER")
-    imap_port: int = Field(default=993, env="IMAP_PORT")
-    imap_username: str = Field(default="", env="IMAP_USER")
-    imap_password: str = Field(default="", env="IMAP_PASS")
+    imap_server: str = Field(default="imap.gmail.com", json_schema_extra={"env": "IMAP_SERVER"})
+    imap_port: int = Field(default=993, json_schema_extra={"env": "IMAP_PORT"})
+    imap_username: str = Field(default="", json_schema_extra={"env": "IMAP_USER"})
+    imap_password: str = Field(default="", json_schema_extra={"env": "IMAP_PASS"})
 
     @property
     def database_url(self) -> str:
@@ -72,8 +72,6 @@ class Settings(BaseSettings):
     def database_url_sync(self) -> str:
         return f"postgresql+psycopg2://{self.postgres_user}:{self.postgres_password}@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
+    model_config = ConfigDict(env_file=".env", case_sensitive=False)
 
 settings = Settings()
